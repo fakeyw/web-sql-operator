@@ -1,0 +1,151 @@
+<!--
+Front Part
+Simple template of py-sql-easyOp 
+With no filiter
+only for personal use
+From:fakeyw(10miric)
+-->
+<!DOCTYPE>
+<html>
+<head>
+<meta charset='utf-8'>
+<script>
+var exchanger=new XMLHttpRequest()
+//var sender=new XMLHttpRequest()
+var choice=0
+
+//状态触发构造函数，异步接收信息，后台调用函数
+exchanger.onreadystatechange=function()
+{
+	//add_msg(exchanger.readyState,exchanger.status) //test
+	if(exchanger.readyState==4&&exchanger.status==200){
+		var message=exchanger.responseText
+		flush()	
+		add_msg_all(message) 
+		//responseText is JSON, parse by add_msg_all
+	}
+}
+//select--------------------------------------
+function ask_dbs()
+{
+	choice=2
+	exchanger.open('POST','http://127.0.0.1:8819/search',true)
+	exchanger.setRequestHeader("Content-Type","application/x-www-form-urlencoded")
+	var msg=document.getElementById('msg')
+	exchanger.send("message="+msg.value)
+	//message is a key in POST
+	msg.value=''
+}
+//insert-------------------------------------------
+function insert()
+{
+	choice=1
+	exchanger.open('POST','http://127.0.0.1:8819/insert',true)
+	exchanger.setRequestHeader("Content-Type","application/x-www-form-urlencoded")
+	var name=document.getElementById('name')
+	var age=document.getElementById('age')
+	var time=document.getElementById('time')	
+	var ist='['+name.value+','+age.value+','+time.value+']'
+	name.value=''
+	age.value=''
+	time.value=''
+	exchanger.send('ist='+ist)
+}
+//delete--------------------------------------------
+function delete_()
+{
+	choice=1
+	var del=document.getElementById('del')
+	exchanger.open('POST','http://127.0.0.1:8819/delete',true)
+	exchanger.setRequestHeader("Content-Type","application/x-www-form-urlencoded")
+	exchanger.send('del='+del.value)
+	del.value=''
+}
+//commit-------------------------------------------
+function commit()
+{
+	choice=1
+	exchanger.open('POST','http://127.0.0.1:8819/commit',true)
+	exchanger.setRequestHeader("Content-Type","application/x-www-form-urlencoded")
+	exchanger.send()
+}
+//加<p>----------------------------------------------
+function add_msg(message)  //for common use
+{
+	var p=document.createElement('p')
+	p.innerText=message
+	var legend=document.getElementById('response')
+	//p.id p.class........
+	legend.append(p)
+}
+
+function add_msg_all(ori_msg)  
+{
+	//basic
+	var div=document.getElementById('main')
+	var fieldset=document.createElement('fieldset')
+	fieldset.id='response'
+	div.append(fieldset)
+	var legend=document.createElement('legend')
+	legend.innerText='Result'
+	fieldset.append(legend)
+	
+	add_msg(ori_msg)
+	ori_msg=eval('('+ori_msg+')') //to standerd js-use json
+	
+	//display response:
+	//Here's somthing redundancy
+	//Please make a good use of these classes or types
+	if(ori_msg.type==2){
+		add_msg(ori_msg.response)
+		//alert(ori_msg.response)
+	}
+	else if(ori_msg.type==1){	 //muti-res
+		if(choice==2){
+			var length=parseInt(ori_msg.length)
+			add_msg('length:'+length)
+			for(var i=0;i<length;i++){
+				var msgpiece='name:'+ori_msg.response[i][0]+',age:'+ori_msg.response[i][1]+',time:'+ori_msg.response[i][2]
+				add_msg(msgpiece)
+			}
+		}
+		if(choice==1){     		//simple-res
+			add_msg(ori_msg.response)
+		}
+	}
+	choice=0
+}
+//------------------------------------------------
+function flush()
+{
+	var div=document.getElementById('main')
+	var count=div.childElementCount
+	for(var i=0;i<count;i++){
+		div.removeChild(div.children[0])
+	}
+}
+</script>
+</head>
+<body>
+COMMIT<input type='button' value='commit' onclick=commit()><br>
+
+Insert to dbs ------<br>
+name:<input type="text" id="name"><br>
+age:<input type="text" id="age"><br>
+time:<input type="text" id="time"><br>
+<input type='button' value='insert' onclick=insert()><br>
+
+Delete -------------<br>
+name:<input type='text' id='del'><br>
+<input type='button' onclick=delete_() value='delete'><br>
+
+Search from dbs ----<br>
+name:
+<input type="text" id="msg">
+<input type="button" value="search" onclick=ask_dbs()><br>
+<input type="button" value="clean" onclick=flush()>
+
+<div id='main'>
+</div>
+</body>
+</html>
