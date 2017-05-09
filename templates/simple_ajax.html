@@ -5,6 +5,15 @@ With no filiter
 only for personal use
 From:fakeyw(10miric)
 -->
+<!--
+standered request json:
+{
+	"type":"xxx",(cmt,ist,dele,ser...)
+	"request":	[a,b,c]	(ist)
+				a  		(ser,dele)
+				(cmt don't need this param)
+} 
+-->
 <!DOCTYPE>
 <html>
 <head>
@@ -25,51 +34,43 @@ exchanger.onreadystatechange=function()
 		//responseText is JSON, parse by add_msg_all
 	}
 }
-//select--------------------------------------
-function ask_dbs()
+
+function activies_Handler(choice)
 {
-	choice=2
-	exchanger.open('POST','http://127.0.0.1:8819/search',true)
+	exchanger.open('POST','http://127.0.0.1:8820/op',true)
 	exchanger.setRequestHeader("Content-Type","application/x-www-form-urlencoded")
-	var msg=document.getElementById('msg')
-	exchanger.send("message="+msg.value)
-	//message is a key in POST
-	msg.value=''
+	switch(choice){
+		case 1: var msg=document.getElementById('msg');
+				var request=msg.value;
+				var message='{"type":"ser","request":"'+request+'"}'
+				msg.value=''
+				break
+				
+		case 2: var name=document.getElementById('name')
+				var age=document.getElementById('age')
+				var time=document.getElementById('time')
+				var request='['+name.value+','+age.value+','+time.value+']'
+				var message='{"type":"ist","request":'+request+'}'
+				name.value=''
+				age.value=''
+				time.value=''
+				break
+				
+		case 3: var msg=document.getElementById('del')
+				var requset=msg.value
+				var message='{"type":"del","request":"'+request+'"}'
+				msg.value=''
+				break
+				
+		case 4: var request=''
+				var message='{"type":"cmt","request":"'+request+'"}'
+				break
+	}
+	exchanger.send("message="+message)
 }
-//insert-------------------------------------------
-function insert()
-{
-	choice=1
-	exchanger.open('POST','http://127.0.0.1:8819/insert',true)
-	exchanger.setRequestHeader("Content-Type","application/x-www-form-urlencoded")
-	var name=document.getElementById('name')
-	var age=document.getElementById('age')
-	var time=document.getElementById('time')	
-	var ist='['+name.value+','+age.value+','+time.value+']'
-	name.value=''
-	age.value=''
-	time.value=''
-	exchanger.send('ist='+ist)
-}
-//delete--------------------------------------------
-function delete_()
-{
-	choice=1
-	var del=document.getElementById('del')
-	exchanger.open('POST','http://127.0.0.1:8819/delete',true)
-	exchanger.setRequestHeader("Content-Type","application/x-www-form-urlencoded")
-	exchanger.send('del='+del.value)
-	del.value=''
-}
-//commit-------------------------------------------
-function commit()
-{
-	choice=1
-	exchanger.open('POST','http://127.0.0.1:8819/commit',true)
-	exchanger.setRequestHeader("Content-Type","application/x-www-form-urlencoded")
-	exchanger.send()
-}
-//加<p>----------------------------------------------
+
+//===============================================
+
 function add_msg(message)  //for common use
 {
 	var p=document.createElement('p')
@@ -96,24 +97,17 @@ function add_msg_all(ori_msg)
 	//display response:
 	//Here's somthing redundancy
 	//Please make a good use of these classes or types
-	if(ori_msg.type==2){
+	if(ori_msg.type==2){		//one-sentence
 		add_msg(ori_msg.response)
-		//alert(ori_msg.response)
 	}
-	else if(ori_msg.type==1){	 //muti-res
-		if(choice==2){
-			var length=parseInt(ori_msg.length)
-			add_msg('length:'+length)
-			for(var i=0;i<length;i++){
-				var msgpiece='name:'+ori_msg.response[i][0]+',age:'+ori_msg.response[i][1]+',time:'+ori_msg.response[i][2]
-				add_msg(msgpiece)
-			}
-		}
-		if(choice==1){     		//simple-res
-			add_msg(ori_msg.response)
+	else if(ori_msg.type==1){	 //tableinfo
+		var length=parseInt(ori_msg.length)
+		add_msg('length:'+length)
+		for(var i=0;i<length;i++){
+			var msgpiece='name:'+ori_msg.response[i][0]+',age:'+ori_msg.response[i][1]+',time:'+ori_msg.response[i][2]
+			add_msg(msgpiece)
 		}
 	}
-	choice=0
 }
 //------------------------------------------------
 function flush()
@@ -127,23 +121,23 @@ function flush()
 </script>
 </head>
 <body>
-COMMIT<input type='button' value='commit' onclick=commit()><br>
+COMMIT<input type='button' value='commit' onclick=activies_Handler(4)><br>
 
 Insert to dbs ------<br>
 name:<input type="text" id="name"><br>
 age:<input type="text" id="age"><br>
 time:<input type="text" id="time"><br>
-<input type='button' value='insert' onclick=insert()><br>
+<input type='button' value='insert' onclick=activies_Handler(2)><br>
 
 Delete -------------<br>
 name:<input type='text' id='del'><br>
-<input type='button' onclick=delete_() value='delete'><br>
+<input type='button' onclick=activies_Handler(3) value='delete'><br>
 
 Search from dbs ----<br>
 name:
 <input type="text" id="msg">
-<input type="button" value="search" onclick=ask_dbs()><br>
-<input type="button" value="clean" onclick=flush()>
+<input type="button" value="search" onclick=activies_Handler(1)><br>
+<input type="button" value="clean" onclick=flush()><br>
 
 <div id='main'>
 </div>
