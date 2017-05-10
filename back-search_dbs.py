@@ -4,27 +4,37 @@ Simple template of py-sql-easyOp
 With no filiter
 only for personal use
 From:fakeyw(10miric)
+Email:main@fakeyw.top
 =====================
 Waiting for Update->
 
-1:Better
+1.Better
 Divide the functions is Foolish
 So i will restore them after
 toooooooo much repeat!!!!
 
-2:Stronger
+2.Stronger
+*Basic Functions:
 Change dbs
 Change table
 Creat dbs
 Creat table
 Change user
-(Add grant?)
-Until all functions are included
+User login
 
-3:Easier
-Auto commit box [√]
+*Advanced Functions:
+Concise code structure							√
+Read all dbs&tables and given choices
+Filiter
+User grant management
 Muti insert
+
+
+3.Easier
+Auto commit choice as box
 Front part UI
+Dynamic table display
+
 =======================================================
 Standered response JSON:
 {
@@ -62,9 +72,23 @@ print('start service')
 
 res=''
 #Maybe this global attr can be solved by Class functions
+#Base Classes===========================================
+#为了更便捷地操作和提取属性，对当前选中的数据库和表建立模型
+#每次更改选项会更新对象,对象中不包括数据的细节，只有基本属性
+#数据细节由cursor.fetchall()确定 加上对象中的列名，产生较完整的Json格式，便于js读取
+class dbs_now():
+	def __init__(self):
+		
+		
+		
+		
+		
+class tab_now():
 
 #Handler Functions======================================
-def search(msg):
+#修改的都是当前选中的表，所以传入表对象
+#产生信息：列名及对应数据类型（列数）
+def search(msg,tab):
 	global res
 	name=msg['request']
 	print('Searching:',name)
@@ -75,7 +99,7 @@ def search(msg):
 	res=dict(type=1,length=length,response=re)
 	#print(res)
 
-def insert(msg):
+def insert(msg,tab):
 	global res
 	#如果需要变长参数，可以用构造函数
 	print('Inserting:',msg)
@@ -83,9 +107,11 @@ def insert(msg):
 	print(patten)
 	cursor.execute(patten)
 	res=dict(type=2,response='succeed')
+
+def insert_cons(length):
+	pass
 	
-	
-def delete(msg):
+def delete(msg,tab):
 	global res
 	print('Deleting:',msg)
 	patten='DELETE FROM new WHERE name=%s' % msg['request']
@@ -93,11 +119,15 @@ def delete(msg):
 	cursor.execute(patten)
 	res=dict(type=2,response='succeed')
 
-def commit(msg):
+def commit(msg,tab):
 	global res
 	print('Commiting...')
 	conn.commit()
 	res=dict(type=2,response='Commited!')
+
+def switching(msg,tab):
+	
+	
 	
 Handler=dict(ist=insert,ser=search,dele=delete,cmt=commit)
 #======================================================
