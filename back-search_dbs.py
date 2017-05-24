@@ -53,12 +53,12 @@ Standered response JSON:
 }
 ========================================================
 '''
-#以后东西多了可以给改成面向对象版？
 from flask import Flask,request,render_template
 import pymysql
 import json
 import logging
 
+#init----------------------------------
 try:
 	conn=pymysql.connect(user='root',password='',database='try')
 except pymysql.err.OperationalError as e:
@@ -66,12 +66,13 @@ except pymysql.err.OperationalError as e:
 	logging.exception(e)
 else:
 	cursor=conn.cursor()
-
-app=Flask(__name__)
+	
 print('start service')
 
+app=Flask(__name__)
 res=''
-#Maybe this global attr can be solved by Class functions
+#----------------------------------------
+#Maybe this global attr can be solved by Class functions (Maybe in Handler class?)
 #Base Classes===========================================
 #为了更便捷地操作和提取属性，对当前选中的数据库和表建立模型
 #每次更改选项会更新对象,对象中不包括数据的细节，只有基本属性
@@ -79,11 +80,11 @@ res=''
 			
 class databases():
 	def __init__(self):
-		
+		pass
 		
 class tables():
 	def __init__(self):
-	
+		pass
 	
 dbs_now=databases()
 tab_now=tables()
@@ -93,15 +94,14 @@ tab_now=tables()
 #修改的都是当前选中的表，所以传入表对象
 #产生信息：列名及对应数据类型（列数）
 
-#Basic op (simple op)
-
-#class Sql_Handler(self)：
-def switching(msg):  #记得同时更新insert的框框
+#class Sql_Handler(self)：#准备把这些函数都扔到Handler类里，并为其加一些便利的参数
+def switching(msg,a):  #记得同时更新insert的框框
 	global tab_now
 	
-def update_info()
+def update_info():
+	pass
 	
-def commit(msg):
+def commit(msg,a):
 	global res
 	print('Commiting...')
 	conn.commit()
@@ -119,7 +119,7 @@ def search(msg,tab): 	#Search的msg需要两个参数了，列名和值（小改
 	res=dict(type=1,length=length,response=re)
 	#print(res)
 
-def insert(msg,tab):    #从tab获取列数，自动构造exec语句（估计要大改）
+def insert(msg,tab):    #从tab获取列数，自动构造exec语句（估计要大改），而且要向web页面返回相应结构 动态构造输入框
 	global res
 	#如果需要变长参数，可以用构造函数
 	print('Inserting:',msg)
@@ -128,7 +128,7 @@ def insert(msg,tab):    #从tab获取列数，自动构造exec语句（估计要
 	cursor.execute(patten)
 	res=dict(type=2,response='succeed')
 
-def insert_cons(length):#
+def insert_cons(length):#加一列而已，需要列名 很好构造
 	pass
 	
 def delete(msg,tab):	#同样地，双参数
@@ -140,7 +140,9 @@ def delete(msg,tab):	#同样地，双参数
 	res=dict(type=2,response='succeed')
 
 Handler=dict(ist=insert,ser=search,dele=delete,cmt=commit)
-#======================================================
+
+#以下的函数基本定型
+#===========================================这是个信息传接函数 负责：↓
 @app.route('/op',methods=['POST'])
 def main_dbs_op():							#接收json，选择函数，错误处理，返回json
 	global res								#json用的dict由所选函数或错误块自行构造
@@ -149,8 +151,8 @@ def main_dbs_op():							#接收json，选择函数，错误处理，返回json
 	msg=json.loads(msg)
 	print(msg)
 	
-	try:
-		Handler[msg['type']](msg)			#type:Succeed 的 res 组装在集成操作函数内进行
+	try:                     #***要想办法解决一下参数长度不一样的问题，有些函数要传入table  
+		Handler[msg['type']](msg,1)			#type:Succeed 的 res 组装在集成操作函数内进行
 	except pymysql.err.InternalError as e:	#type:Error 的 res 由错误处理进行
 		res='%s %s'%e.args					#两者并不冲突 ,因为一旦execute失败 就会跳过之后的dict组装
 		res=dict(type=2,response=res)
@@ -159,13 +161,12 @@ def main_dbs_op():							#接收json，选择函数，错误处理，返回json
 		res=dict(type=2,response=res)
 	finally:
 		res=json.dumps(res)					#在最后统一打包json格式
-		print("!RES!:")
-		print(res)
+		print("[RES:%s]"%res)
 		return res,200,{'Access-Control-Allow-Origin':'*'}
 
 @app.route('/',methods=['GET'])	
 def search_main():
-	return render_template('ajax2.html'),200,{'Access-Control-Allow-Origin':'*'}
+	return render_template('simple_ajax.html'),200,{'Access-Control-Allow-Origin':'*'}
 	
 if __name__=='__main__':
     app.run(debug=True,port=8820)
