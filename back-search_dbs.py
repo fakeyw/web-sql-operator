@@ -53,6 +53,11 @@ Standered response JSON:
 }
 ========================================================
 '''
+#1.完成基本类
+#2.完成handler
+#3.检查冲突和json
+#4.前端
+
 from flask import Flask,request,render_template
 import pymysql
 import json
@@ -77,25 +82,56 @@ res=''
 #为了更便捷地操作和提取属性，对当前选中的数据库和表建立模型
 #每次更改选项会更新对象,对象中不包括数据的细节，只有基本属性
 #数据细节由cursor.fetchall()确定 加上对象中的列名，产生较完整的Json格式，便于js读取
-			
-class databases():
+class sql(object):
 	def __init__(self):
+		self.__dbs_num=
+		self.__dbs_name=list()
+		for i in range(self.__dbs_num):
+			self.__dbs_name.append()
+	
+	def flush():
+		pass
+			
+class databases(object,dbsname):
+	def __init__(self,dbsname):
+		self.__table_num=
+		self.__table_name=list()
+		for i in range(self.__table_num):
+			self.__table_name.append()
+	
+	def flush():
 		pass
 		
-class tables():
-	def __init__(self):
+class tables(object,tablename):
+	def __init__(self,tablename):
+		self.__colomn_num=
+		self.__colomn_name=list()
+		for i in range(self.__colomn_num):
+			self.__colomn_name.append()
+		self.__colomn_type=list()
+		for i in range(self.__colomn_num):
+			self.__colomn_type.append()
+			
+	def flush():
+		pass
+		
+	def get_types():
 		pass
 	
-dbs_now=databases()
-tab_now=tables()
+	def get_names():
+		pass
+
+#sql_now=sql()
+#dbs_now=databases(dbsname)
+#tab_now=tables(tabname)
 
 #Handler Functions======================================
 #每种行为在前端js都有对应的信息包
 #修改的都是当前选中的表，所以传入表对象
 #产生信息：列名及对应数据类型（列数）
 
-#class Sql_Handler(self)：#准备把这些函数都扔到Handler类里，并为其加一些便利的参数
-def switching(msg,a):  #记得同时更新insert的框框
+#class Sql_Handler(object)：#准备把这些函数都扔到Handler类里，并为其加一些便利的参数
+def switching(msg,a):  		#记得同时更新insert的框框
 	global tab_now
 	
 def update_info():
@@ -128,7 +164,7 @@ def insert(msg,tab):    #从tab获取列数，自动构造exec语句（估计要
 	cursor.execute(patten)
 	res=dict(type=2,response='succeed')
 
-def insert_cons(length):#加一列而已，需要列名 很好构造
+def insert_rows(msg,tab):#msg中有加几行，什么内容
 	pass
 	
 def delete(msg,tab):	#同样地，双参数
@@ -138,8 +174,11 @@ def delete(msg,tab):	#同样地，双参数
 	print(patten)
 	cursor.execute(patten)
 	res=dict(type=2,response='succeed')
+	
+def add_col(msg,tab): #加一列 msg:列名
+	pass
 
-Handler=dict(ist=insert,ser=search,dele=delete,cmt=commit)
+Handler=dict(ist=insert,ser=search,dele=delete,cmt=commit)	#记录函数名，直接调用
 
 #以下的函数基本定型
 #===========================================这是个信息传接函数 负责：↓
@@ -151,9 +190,9 @@ def main_dbs_op():							#接收json，选择函数，错误处理，返回json
 	msg=json.loads(msg)
 	print(msg)
 	
-	try:                     #***要想办法解决一下参数长度不一样的问题，有些函数要传入table  
+	try:                     #***要想办法解决一下参数长度不一样的问题，有些函数要传入table对象
 		Handler[msg['type']](msg,1)			#type:Succeed 的 res 组装在集成操作函数内进行
-	except pymysql.err.InternalError as e:	#type:Error 的 res 由错误处理进行
+	except pymysql.err.InternalError as e:	#type:Error 的 res 由错误处理进行 *所有错误都在外部抓取，不在具体函数内进行
 		res='%s %s'%e.args					#两者并不冲突 ,因为一旦execute失败 就会跳过之后的dict组装
 		res=dict(type=2,response=res)
 	except pymysql.err.ProgrammingError as e:

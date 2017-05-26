@@ -46,7 +46,7 @@ function activies_Handler(choice)
 				msg.value=''
 				break
 				
-		case 2: var name=document.getElementById('name')
+		case 2: var name=document.getElementById('name')   //Conplicated module, dynamic structure is needed
 				var age=document.getElementById('age')
 				var time=document.getElementById('time')
 				var request='['+name.value+','+age.value+','+time.value+']'
@@ -80,7 +80,7 @@ function add_msg(message)  //for common use
 	legend.append(p)
 }
 
-function add_msg_all(ori_msg)  
+function add_msg_all(ori_msg)  //Parser of two types of JSON  
 {
 	//basic
 	var div=document.getElementById('main')
@@ -100,6 +100,7 @@ function add_msg_all(ori_msg)
 	if(ori_msg.type==2){		//one-sentence
 		add_msg(ori_msg.response)
 	}
+	
 	else if(ori_msg.type==1){	 //tableinfo
 		var length=parseInt(ori_msg.length)
 		add_msg('length:'+length)
