@@ -61,18 +61,7 @@ Standered response JSON:
 from flask import Flask,request,render_template
 import pymysql
 import json
-import logging
-
-#init----------------------------------
-try:
-	conn=pymysql.connect(user='root',password='',database='try')
-except pymysql.err.OperationalError as e:
-	print('Error:',e.args)
-	logging.exception(e)
-else:
-	cursor=conn.cursor()
-	
-print('start service')
+import logging 
 
 app=Flask(__name__)
 res=''
@@ -84,33 +73,36 @@ res=''
 #数据细节由cursor.fetchall()确定 加上对象中的列名，产生较完整的Json格式，便于js读取
 class sql(object):
 	def __init__(self):
-		self.__dbs_num=
-		self.__dbs_name=list()
-		for i in range(self.__dbs_num):
-			self.__dbs_name.append()
+		#init------------------直接对用户建立对象，避免冲突
+		try:
+		#登录界面之后选择登入的dbs，之后更改用use语句就可以了
+			conn=pymysql.connect(user='root',password='',database='try')
+		except pymysql.err.OperationalError as e:
+			print('Error:',e.args)
+			logging.exception(e)
+		else:
+			cursor=conn.cursor()
+	
+		print('start service')
+		self.__dbs_num=cursor.execute('show databases')
+		self.__dbs_name=cursor.fetchall()
 	
 	def flush():
 		pass
-			
+		
 class databases(object,dbsname):
 	def __init__(self,dbsname):
-		self.__table_num=
-		self.__table_name=list()
-		for i in range(self.__table_num):
-			self.__table_name.append()
+		self.__table_num=cursor.execute('show tables')
+		self.__table_name=cursor.fetchall()
 	
 	def flush():
 		pass
 		
 class tables(object,tablename):
 	def __init__(self,tablename):
-		self.__colomn_num=
-		self.__colomn_name=list()
-		for i in range(self.__colomn_num):
-			self.__colomn_name.append()
-		self.__colomn_type=list()
-		for i in range(self.__colomn_num):
-			self.__colomn_type.append()
+		self.__table_name=tablename
+		self.__colomn_num=cursor.execute("select column_name,data_type from information_schema.columns where table_name='%s'" % __tablename)
+		self.__colomn_info=cursor.fetchall()
 			
 	def flush():
 		pass
@@ -129,8 +121,9 @@ class tables(object,tablename):
 #每种行为在前端js都有对应的信息包
 #修改的都是当前选中的表，所以传入表对象
 #产生信息：列名及对应数据类型（列数）
+#以下所有函数的测试部分要换成动态构造
 
-#class Sql_Handler(object)：#准备把这些函数都扔到Handler类里，并为其加一些便利的参数
+#class Sql_Handler(object)：#准备把这些函数都扔到Handler类里，并为其加一些便利的参数->比如用户和权限之类的
 def switching(msg,a):  		#记得同时更新insert的框框
 	global tab_now
 	
