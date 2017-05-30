@@ -20,20 +20,21 @@ Email:main@fakeyw.top
 
 standard request JSON:
 
-```JSON
-{
-	"type":"xxx",(cmt,ist,dele,ser...)
-	"request":	
-  			[a,b,c]	(ist,muti-info)
-			a  		(ser,dele)
-			(cmt do not need this param)
-}
-```
+> ```JSON
+> {
+> 	"type":"xxx",(cmt,ist,dele,ser...)
+> 	"request":	
+>   			[a,b,c]	(ist,muti-info)
+> 			a  		(ser,dele)
+> 			(cmt do not need this param)
+> }
+> ```
+
 Now I wanna make it split to several parts
 
 1. Arrange functions to some .JS documents.
 2. Find better JSON structure for ALL APIs.
-3.  Split UI into two parts: 
+3. Split UI into two parts: 
    1. Function area
    2. Response area
    3. Maybe others
@@ -75,18 +76,19 @@ Dynamic table display
 ---------------------------------
 Standard response JSON:
 
-```jSON
-{
-	"type":(1,2,...)		//1:tableinfo(muti-info use tuple) 2:status info(onr sentence)
-	("length":(1,2,...))	 //for select
-	"response": //for select
-		[
-			[a,b,c],
-			[d,e,f],
-			...
-		]
-		//or simple info like:
-		"ERROR:......"  	//for all error
-		"Succeed!..."		//for insert/delete/commit
-}
-```
+> ```jSON
+> {
+> 	"type":(1,2,...)		//1:tableinfo(muti-info use tuple) 2:status info(onr sentence)
+> 	("length":(1,2,...))	 //for select
+> 	"response": //for select
+> 		[
+> 			[a,b,c],
+> 			[d,e,f],
+> 			...
+> 		]
+> 		//or simple info like:
+> 		"ERROR:......"  	//for all error
+> 		"Succeed!..."		//for insert/delete/commit
+> }
+> ```
+>
