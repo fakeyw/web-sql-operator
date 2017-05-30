@@ -20,13 +20,13 @@ Email:main@fakeyw.top
 
 standard request JSON:
 
-> ```JSON
+> ```javascript
 > {
-> 	"type":"xxx",(cmt,ist,dele,ser...)
+> 	"type":"xxx",//(cmt,ist,dele,ser...)
 > 	"request":	
->   			[a,b,c]	(ist,muti-info)
-> 			a  		(ser,dele)
-> 			(cmt do not need this param)
+>   		[a,b,c]	//(ist,muti-info)
+> 			a  		//(ser,dele)
+> 			//(cmt do not need this param)
 > }
 > ```
 
@@ -76,7 +76,7 @@ Dynamic table display
 ---------------------------------
 Standard response JSON:
 
-> ```jSON
+> ```javascript
 > {
 > 	"type":(1,2,...)		//1:tableinfo(muti-info use tuple) 2:status info(onr sentence)
 > 	("length":(1,2,...))	 //for select
@@ -84,7 +84,7 @@ Standard response JSON:
 > 		[
 > 			[a,b,c],
 > 			[d,e,f],
-> 			...
+> 			//...
 > 		]
 > 		//or simple info like:
 > 		"ERROR:......"  	//for all error
