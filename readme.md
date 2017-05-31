@@ -29,6 +29,7 @@ standard request JSON:
 			//(cmt do not need this param)
 }
 ```
+
 Now I wanna make it split to several parts
 
 1. Arrange functions to some .JS documents.
@@ -76,6 +77,7 @@ too much repeat!!
 
 ------------
 Standard response JSON:
+
 ```javascript
 {
 	"type":(1,2,...)		//1:tableinfo(muti-info use tuple) 2:status info(onr sentence)
